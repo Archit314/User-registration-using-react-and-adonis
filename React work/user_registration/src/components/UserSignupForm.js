@@ -1,15 +1,11 @@
 import React from "react";
-import "../components-css/UserRegistrationCss.css";
+import "../components-css/UserSignupFormCss.css";
 
-export default function UserRegistration() {
+export default function UserSignupForm() {
   return (
     <>
       <div>
         <div className="container" id="registrationForm">
-          {/* <div className="container" id="form-heading">
-            <h3>Signup</h3>
-          </div> */}
-
           <div className="container" id="form">
             <form>
               <h3 id="form-heading">Signup</h3>

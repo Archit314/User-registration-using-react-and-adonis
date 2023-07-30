@@ -1,11 +1,10 @@
-// import logo from "./logo.svg";
 import "./App.css";
-import UserRegistration from "./components/UserRegistration";
+import UserSignupForm from "./components/UserSignupForm";
 
 function App() {
   return (
     <>
-      <UserRegistration />
+      <UserSignupForm />
     </>
   );
 }
