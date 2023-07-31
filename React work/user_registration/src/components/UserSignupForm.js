@@ -1,7 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../components-css/UserSignupFormCss.css";
 
-export default function UserSignupForm() {
+export default function UserSignupForm({ path }) {
   return (
     <>
       <div>
@@ -53,7 +54,7 @@ export default function UserSignupForm() {
                 Submit
               </button>
               <p id="form-fotter">
-                If already registered ? click to <a href="/">Sign in</a>
+                If already registered ? click to <Link to={path}>Sign in</Link>
               </p>
             </form>
           </div>
