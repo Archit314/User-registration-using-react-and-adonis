@@ -13,7 +13,7 @@ export default function UserSignInForm({ path }) {
 
                 <div className="mb-3">
                   <label htmlFor="userName" className="form-label">
-                    User Name
+                    User name
                   </label>
                   <input type="text" className="form-control" id="userName" />
                 </div>
