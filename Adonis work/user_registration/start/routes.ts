@@ -28,4 +28,5 @@ Route.get('/', async () => {
 Route.group(() => {
 
   Route.post('/sign-up', 'UsersController.userRegistration')
+  Route.post('/sign-in', 'UsersController.userLogin')
 }).prefix('user')
