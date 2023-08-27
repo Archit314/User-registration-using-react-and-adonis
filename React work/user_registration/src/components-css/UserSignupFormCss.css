@@ -1,6 +1,6 @@
-body {
+/* body {
     background-color: gray;
-}
+} */
 
 html {
     font-size: 16px;
@@ -52,4 +52,13 @@ html {
 
 #form-fotter a {
     color: rgb(251, 222, 75);
+}
+
+#navbarNavDropdown a {
+    color: black;
+    text-align: center;
+}
+
+#navbarNavDropdown ul {
+    border-radius: 0.8rem;
 }
