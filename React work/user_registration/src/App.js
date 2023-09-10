@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SubNavbar from "./components/Sub-Navbar";
 import Store from "./components/SubNavbarLinks/Store";
 import { useParams } from "react-router-dom";
+import Home from "./components/Home";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <BrowserRouter>
         <NavBar />
         <Routes>
+          <Route exact path="/" element={<Home />} />
           <Route
             exact
             path="/sign-up"

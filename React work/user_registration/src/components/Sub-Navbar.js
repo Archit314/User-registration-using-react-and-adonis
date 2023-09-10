@@ -1,11 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 // import "../components-css/UserSignupFormCss.css";
 
-export default function subNavbar() {
+export default function SubNavbar() {
+  const navBackgroundColor = {
+    backgroundColor: "#6f6f6f",
+  };
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const getAllCategories = async () => {
+      const postData = {
+        url: " http://127.0.0.1:3333/navbar/category",
+        method: "get",
+      };
+
+      try {
+        const response = await axios(postData);
+        const categories = await response.data;
+        // console.log(response.data);
+
+        // const categories = await response.json();
+        console.log(categories.status);
+        console.log(categories.data);
+
+        if (categories.status === 200) {
+          setCategories(categories.data);
+          console.log(`Categories fetch successfully.`, categories.data);
+        } else {
+          console.log(`Failed to get categories.`);
+        }
+      } catch (error) {
+        console.log(`Error`, error);
+      }
+    };
+
+    getAllCategories();
+  }, []);
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg" style={navBackgroundColor}>
         {/* <div className="container-fluid"> */}
         <button
           className="navbar-toggler"
@@ -20,113 +55,19 @@ export default function subNavbar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav">
-            <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="/">
-                Stationary
-              </a>
-            </li>
+            {/* STATIOANRY */}
 
-            {/* drop down for stationary */}
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/"
-                id="navbarDropdownMenuLink"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Stationary
-              </a>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="navbarDropdownMenuLink"
-              >
-                <li>
-                  <Link className="dropdown-item" to="/store/pencil">
-                    Pencil
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/store/pen">
-                    Pen
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/store/rubber">
-                    Rubber
-                  </Link>
-                </li>
-              </ul>
-            </li>
-
-            {/* drop down for books */}
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/"
-                id="navbarDropdownMenuLink"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Books
-              </a>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="navbarDropdownMenuLink"
-              >
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Class 1
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Class 2
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Class 3
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            {/* drop down  */}
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/"
-                id="navbarDropdownMenuLink"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Dropdown link
-              </a>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="navbarDropdownMenuLink"
-              >
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Something else here
-                  </a>
-                </li>
-              </ul>
-            </li>
+            {categories.map((category) => (
+              <li className="nav-item" key={category}>
+                <Link
+                  className="nav-link active"
+                  aria-current="page"
+                  to={`/store/${category.toLowerCase()}`}
+                >
+                  {category}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
         {/* </div> */}

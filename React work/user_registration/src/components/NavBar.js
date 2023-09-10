@@ -3,15 +3,20 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
+  const navbarStyle = {
+    backgroundColor: "#F28123", // Set the background color here
+  };
+
+  const textStyle = {
+    color: "white",
+  };
+
   return (
     <>
-      <nav
-        className="navbar navbar-expand-lg navbar-dark bg-primary"
-        id="NavBar"
-      >
+      <nav className="navbar navbar-expand-lg " style={navbarStyle} id="NavBar">
         <div className="container-fluid">
-          <a className="navbar-brand" href="/">
-            Coders
+          <a className="navbar-brand" href="/" style={textStyle}>
+            AapKa Bazzar
           </a>
           <button
             className="navbar-toggler"

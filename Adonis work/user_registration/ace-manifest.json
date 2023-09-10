@@ -1,5 +1,17 @@
 {
   "commands": {
+    "add:product_item": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/AddProductItem",
+      "commandName": "add:product_item",
+      "description": "This command is used to insert the product item.",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",

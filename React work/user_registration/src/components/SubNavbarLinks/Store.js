@@ -1,8 +1,103 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SubNavbar from "../Sub-Navbar";
+import axios from "axios";
 // import "../../components-css/NavBarCss.css";
 
 export default function Store({ item }) {
+  const buttonStyle = {
+    backgroundColor: "#F28123",
+  };
+
+  const paramItem = item;
+  const [product, setProduct] = useState([]);
+  const [productItem, setProductItem] = useState([]);
+
+  useEffect(() => {
+    const getAllProducts = async () => {
+      const postData = {
+        method: "post",
+        url: "http://127.0.0.1:3333/category-product/all",
+        data: { categoryName: paramItem },
+      };
+
+      try {
+        const response = await axios(postData);
+        if (!response) {
+          console.log(`Error due to internal source.`);
+        }
+        const allProducts = await response.data;
+
+        if (allProducts.status === 200) {
+          await setProduct(allProducts.data);
+        } else {
+          console.log(`Failed to get products.`);
+        }
+      } catch (error) {
+        console.log(`ERROR`, error);
+      }
+    };
+    getAllProducts();
+  }, [paramItem]);
+
+  // fetching all product items
+  useEffect(() => {
+    const fetchAllItems = async () => {
+      const postData = {
+        url: "http://127.0.0.1:3333/product-item/all",
+        method: "post",
+        data: { categoryName: paramItem },
+      };
+
+      try {
+        const response = await axios(postData);
+
+        if (!response) {
+          console.log(`Error due to internal source.`);
+        }
+
+        const allItems = response.data;
+        if (!allItems) {
+          console.log(`Items not found.`);
+        } else if (allItems && allItems.status === 200) {
+          console.log(`Items fetched successfully`);
+          await setProductItem(allItems.data);
+        }
+      } catch (error) {
+        console.log(`Error`, error);
+      }
+    };
+
+    fetchAllItems();
+  }, [paramItem]);
+
+  // handling filter data
+  const handleFilter = async (productFilterItem) => {
+    // const filterData = !productFilterItem ? item : productFilterItem;
+    const postData = {
+      url: "http://127.0.0.1:3333/product-item/listing",
+      method: "post",
+      data: { productName: productFilterItem },
+    };
+    console.log(paramItem);
+    try {
+      const response = await axios(postData);
+      if (!response) {
+        console.log(`error`);
+      }
+      const allItem = await response.data;
+      if (!allItem) {
+        console.log(`No Item Found`);
+      } else if (allItem && allItem.status === 200) {
+        console.log(`items`, allItem.data.CategoryProductItem);
+        setProductItem(allItem.data.CategoryProductItem);
+      } else {
+        console.log(`Error occured internally.`);
+      }
+    } catch (error) {
+      console.log(`Error in filtering`, error);
+    }
+  };
+
   return (
     <>
       <SubNavbar />
@@ -14,7 +109,7 @@ export default function Store({ item }) {
             <div className="col-lg-8 offset-lg-2 text-center">
               <div className="breadcrumb-text">
                 <h1>
-                  <p>{item}</p>Shop
+                  Shop<p>{item} that you need</p>
                 </h1>
               </div>
             </div>
@@ -30,12 +125,16 @@ export default function Store({ item }) {
             <div className="col-md-12">
               <div className="product-filters">
                 <ul>
-                  <li className="active" data-filter="*">
-                    All
-                  </li>
-                  <li data-filter=".strawberry">Strawberry</li>
-                  <li data-filter=".berry">Berry</li>
-                  <li data-filter=".lemon">Lemon</li>
+                  {product.map((singleProduct) => (
+                    <li
+                      className="active"
+                      data-filter=".strawberry"
+                      key={singleProduct}
+                      onClick={() => handleFilter(singleProduct)}
+                    >
+                      {singleProduct}
+                    </li>
+                  ))}
                 </ul>
                 <form className="d-flex">
                   <input
@@ -44,7 +143,7 @@ export default function Store({ item }) {
                     placeholder="Search"
                     aria-label="Search"
                   />
-                  <button className="btn btn-outline-dark" type="submit">
+                  <button className="btn" type="submit" style={buttonStyle}>
                     Search
                   </button>
                 </form>
@@ -53,102 +152,27 @@ export default function Store({ item }) {
           </div>
 
           <div className="row product-lists">
-            <div className="col-lg-4 col-md-6 text-center strawberry">
-              <div className="single-product-item">
-                <div className="product-image">
-                  <a href="single-product.html">
-                    <img src="/assets/img/products/product-img-1.jpg" alt="" />
+            {productItem.map((singleItem) => (
+              <div className="col-lg-4 col-md-6 text-center strawberry">
+                <div className="single-product-item">
+                  <div className="product-image">
+                    <a href="single-product.html">
+                      <img
+                        src="/assets/img/products/product-img-1.jpg"
+                        alt=""
+                      />
+                    </a>
+                  </div>
+                  <h3>{singleItem.item}</h3>
+                  <p className="product-price">
+                    <span>Per piece</span> {singleItem.item_price}{" "}
+                  </p>
+                  <a href="cart.html" className="cart-btn">
+                    <i className="fas fa-shopping-cart"></i> Add to Cart
                   </a>
                 </div>
-                <h3>Strawberry</h3>
-                <p className="product-price">
-                  <span>Per Kg</span> 85${" "}
-                </p>
-                <a href="cart.html" className="cart-btn">
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </a>
               </div>
-            </div>
-            <div className="col-lg-4 col-md-6 text-center berry">
-              <div className="single-product-item">
-                <div className="product-image">
-                  <a href="single-product.html">
-                    <img src="/assets/img/products/product-img-2.jpg" alt="" />
-                  </a>
-                </div>
-                <h3>Berry</h3>
-                <p className="product-price">
-                  <span>Per Kg</span> 70${" "}
-                </p>
-                <a href="cart.html" className="cart-btn">
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-6 text-center lemon">
-              <div className="single-product-item">
-                <div className="product-image">
-                  <a href="single-product.html">
-                    <img src="/assets/img/products/product-img-3.jpg" alt="" />
-                  </a>
-                </div>
-                <h3>Lemon</h3>
-                <p className="product-price">
-                  <span>Per Kg</span> 35${" "}
-                </p>
-                <a href="cart.html" className="cart-btn">
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-6 text-center">
-              <div className="single-product-item">
-                <div className="product-image">
-                  <a href="single-product.html">
-                    <img src="/assets/img/products/product-img-4.jpg" alt="" />
-                  </a>
-                </div>
-                <h3>Avocado</h3>
-                <p className="product-price">
-                  <span>Per Kg</span> 50${" "}
-                </p>
-                <a href="cart.html" className="cart-btn">
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-6 text-center">
-              <div className="single-product-item">
-                <div className="product-image">
-                  <a href="single-product.html">
-                    <img src="/assets/img/products/product-img-5.jpg" alt="" />
-                  </a>
-                </div>
-                <h3>Green Apple</h3>
-                <p className="product-price">
-                  <span>Per Kg</span> 45${" "}
-                </p>
-                <a href="cart.html" className="cart-btn">
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-6 text-center strawberry">
-              <div className="single-product-item">
-                <div className="product-image">
-                  <a href="single-product.html">
-                    <img src="/assets/img/products/product-img-6.jpg" alt="" />
-                  </a>
-                </div>
-                <h3>Strawberry</h3>
-                <p className="product-price">
-                  <span>Per Kg</span> 80${" "}
-                </p>
-                <a href="cart.html" className="cart-btn">
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </a>
-              </div>
-            </div>
+            ))}
           </div>
 
           <div className="row">
