@@ -19,7 +19,7 @@ export default class UserService {
         Logger.info("New user saved successfully with id as ${newUser.id}.")
 
         const accessToken = await auth.use("api").login(newUser, {
-            expiresIn: "10 sec",
+            expiresIn: "5 mins",
         });
         Logger.info(`API token generated successfully.  ${accessToken}`)
 
@@ -30,5 +30,9 @@ export default class UserService {
 
         Logger.info(`New user signup successfully.`)
         return responseData
+    }
+
+    async userLogin(){
+        
     }
 }

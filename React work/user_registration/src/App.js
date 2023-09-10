@@ -1,15 +1,20 @@
 import "./App.css";
-import Home from "./components/Home";
+import NavBar from "./components/NavBar";
 import UserSignupForm from "./components/UserSignupForm";
 import UserSignInForm from "./components/UserSignInForm";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SubNavbar from "./components/Sub-Navbar";
+import Store from "./components/SubNavbarLinks/Store";
+import { useParams } from "react-router-dom";
+import Home from "./components/Home";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Home />
+        <NavBar />
         <Routes>
+          <Route exact path="/" element={<Home />} />
           <Route
             exact
             path="/sign-up"
@@ -20,10 +25,18 @@ function App() {
             path="/sign-in"
             element={<UserSignInForm path="/sign-up" />}
           />
+          <Route exact path="/our-store" element={<SubNavbar />} />
+          <Route exact path="/store/:item" element={<StoreWithParam />} />
         </Routes>
       </BrowserRouter>
     </>
   );
+}
+
+function StoreWithParam() {
+  const { item } = useParams();
+
+  return <Store item={item} />;
 }
 
 export default App;

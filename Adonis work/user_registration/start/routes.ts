@@ -28,4 +28,10 @@ Route.get('/', async () => {
 Route.group(() => {
 
   Route.post('/sign-up', 'UsersController.userRegistration')
+  Route.post('/sign-in', 'UsersController.userLogin')
 }).prefix('user')
+
+Route.get('/navbar/category', 'Product/ProductsController.getNavbarCategory')
+Route.post('/category-product/all', 'Product/ProductsController.fetchCategoryProduct')
+Route.post('/product-item/all', 'Product/ProductsController.itemAll')
+Route.post('/product-item/listing', 'Product/ProductsController.itemListing')
