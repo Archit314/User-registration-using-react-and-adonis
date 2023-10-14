@@ -7,6 +7,9 @@ import SubNavbar from "./components/Sub-Navbar";
 import Store from "./components/SubNavbarLinks/Store";
 import { useParams } from "react-router-dom";
 import Home from "./components/Home";
+import ProductCart from "./components/Product/ProductCart";
+import { UserAuthentication } from "./components/Authentication/UserAuthentication";
+import UserLogout from "./components/UserLogout";
 
 function App() {
   return (
@@ -14,7 +17,11 @@ function App() {
       <BrowserRouter>
         <NavBar />
         <Routes>
-          <Route exact path="/" element={<Home />} />
+          <Route
+            exact
+            path="/"
+            element={<UserAuthentication Component={Home} />}
+          />
           <Route
             exact
             path="/sign-up"
@@ -25,18 +32,32 @@ function App() {
             path="/sign-in"
             element={<UserSignInForm path="/sign-up" />}
           />
+          <Route
+            exact
+            path="/logout"
+            element={<UserAuthentication Component={UserLogout} />}
+          />
           <Route exact path="/our-store" element={<SubNavbar />} />
-          <Route exact path="/store/:item" element={<StoreWithParam />} />
+          <Route
+            exact
+            path="/store/:item"
+            element={<StoreWithParam component={Store} />}
+          />
+          <Route
+            exact
+            path="/user/cart/:item"
+            element={<StoreWithParam component={ProductCart} />}
+          />
         </Routes>
       </BrowserRouter>
     </>
   );
 }
 
-function StoreWithParam() {
+function StoreWithParam({ component: Component }) {
   const { item } = useParams();
 
-  return <Store item={item} />;
+  return <Component item={item} />;
 }
 
 export default App;

@@ -7,6 +7,9 @@ export default function SubNavbar() {
   const navBackgroundColor = {
     backgroundColor: "#6f6f6f",
   };
+  const cartIconAllignment = {
+    color: "black",
+  };
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -71,6 +74,10 @@ export default function SubNavbar() {
           </ul>
         </div>
         {/* </div> */}
+
+        <Link to="/" style={cartIconAllignment}>
+          <i className="fas fa-shopping-cart"></i> Cart
+        </Link>
       </nav>
     </>
   );
