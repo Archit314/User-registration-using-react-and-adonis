@@ -31,6 +31,12 @@ Route.group(() => {
   Route.post('/sign-in', 'UsersController.userLogin')
 }).prefix('user')
 
+Route.group(() => {
+  Route.group(() => {
+    Route.post('/add-to/cart', 'Product/CartsController.addToCart')
+  }).middleware('userAuth')
+}).prefix('v1/user')
+
 Route.get('/navbar/category', 'Product/ProductsController.getNavbarCategory')
 Route.post('/category-product/all', 'Product/ProductsController.fetchCategoryProduct')
 Route.post('/product-item/all', 'Product/ProductsController.itemAll')

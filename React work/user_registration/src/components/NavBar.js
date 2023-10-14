@@ -42,6 +42,11 @@ export default function Home() {
                 </Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link" to="/logout">
+                  Logout
+                </Link>
+              </li>
+              {/* <li className="nav-item">
                 <Link className="nav-link" to="/sign-up">
                   Sign Up
                 </Link>
@@ -50,7 +55,7 @@ export default function Home() {
                 <Link className="nav-link" to="/sign-in">
                   Sign In
                 </Link>
-              </li>
+              </li> */}
             </ul>
             {/* <form className="d-flex">
               <input
