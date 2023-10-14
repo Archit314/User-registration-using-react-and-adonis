@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SubNavbar from "../Sub-Navbar";
 import axios from "axios";
+import { Link } from "react-router-dom";
 // import "../../components-css/NavBarCss.css";
 
 export default function Store({ item }) {
@@ -167,9 +168,12 @@ export default function Store({ item }) {
                   <p className="product-price">
                     <span>Per piece</span> {singleItem.item_price}{" "}
                   </p>
-                  <a href="cart.html" className="cart-btn">
+                  <Link
+                    to={`/user/cart/${singleItem.item}`}
+                    className="cart-btn"
+                  >
                     <i className="fas fa-shopping-cart"></i> Add to Cart
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}
