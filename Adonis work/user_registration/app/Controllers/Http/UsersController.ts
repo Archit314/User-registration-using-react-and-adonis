@@ -1,7 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema } from '@ioc:Adonis/Core/Validator'
+import ApiToken from 'App/Models/ApiToken'
 import User from 'App/Models/User'
 import UserService from 'App/Services/UsersService'
+import Encryption from '@ioc:Adonis/Core/Encryption';
 
 export default class UsersController {
 
@@ -31,7 +33,7 @@ export default class UsersController {
             }
         }) // end of validation
 
-        const { name, userName, mobileNumber, email, password } = request.all()
+        let { name, userName, mobileNumber, email, password } = request.all()
 
         const existUser = await User.query().select('mobile_number', 'user_name').where('mobile_number', mobileNumber).orWhere('user_name', userName).first()
 
@@ -40,8 +42,10 @@ export default class UsersController {
             return response.status(422).send({ status: 422, message: `${exists} already exists.` })
         }
 
+        password = await Encryption.encrypt(password, 0, `hsn`)        
+
         const userService = new UserService()
-        const userSignuped = await userService.userSignup(name, userName, mobileNumber, email, password, ctx.auth)
+        const userSignuped = await userService.userSignup(name, userName, mobileNumber, email, password)
 
         if (!userSignuped) return response.status(422).send({ status: 422, messages: "User register failed." })
 
@@ -64,18 +68,22 @@ export default class UsersController {
             }
         })
 
-        const {userName, password} = request.all()
-
+        let {userName, password} = request.all()
+        
         const existUser = await User.query().where('user_name', userName).orWhere('email', userName).first()
 
-        if(!existUser) return response.status(422).send({status: 422, message: "User not found"})
+        if(!existUser) return response.status(422).send({status: 422, message: "User not found"})        
 
-        const token = await ctx.auth.use("api").attempt(userName, password,{
-            expiresIn: "5 mins"
-        })
+        let existUserDecryptedPassword = await Encryption.decrypt(existUser.password, 'hsn')        
+
+        if(password != existUserDecryptedPassword){
+            return response.status(422).send({status: 422, message: `Password mismatch.`})
+        }
+
+        const token = await ApiToken.query().select('token').where('user_id', existUser.id).where('password', existUser.password).first()        
 
         if(!token) return response.status(422).send({status: 422, message: "User not found"})
 
-        return response.status(200).send({status: 200, message: token.toJSON()})
+        return response.status(200).send({status: 200, message: `User sign in successfully`, data: token})
     }
 }

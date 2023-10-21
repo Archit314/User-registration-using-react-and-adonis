@@ -34,7 +34,7 @@ export default function UserSignInForm({ path }) {
       const apiResponse = response.data;
       if (apiResponse.status === 200) {
         console.log(`Login successfully`);
-        localStorage.setItem("access-token", response.data.message.token);
+        localStorage.setItem("access-token", response.data.data.token);
         SetUserData(data);
         navigate("/");
       } else {
