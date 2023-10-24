@@ -8,16 +8,16 @@ export default class UserAuthentication {
     // code for middleware goes here. ABOVE THE NEXT CALL
 
     const authHeader = ctx.request.header('Authorization')
-    console.log(authHeader);
+    // console.log(authHeader);
     
 
     if(!authHeader || !authHeader.startsWith('Bearer '))return ctx.response.status(422).send({status: 422, message: `Token  expired!`})
 
     const token = authHeader.replace('Bearer ', "")
-    console.log(token);
+    // console.log(token);
 
     const customerToken = await Database.from('api_tokens').select('*').where('token', token).first()
-    console.log(customerToken);
+    // console.log(customerToken);
     
 
     if(!customerToken) return ctx.response.status(422).send({status: 422, message: `Token not found!`})

@@ -34,6 +34,7 @@ Route.group(() => {
 Route.group(() => {
   Route.group(() => {
     Route.post('/add-to/cart', 'Product/CartsController.addToCart')
+    Route.get('/cart/item', 'Product/CartsController.getUserCart')
   }).middleware('userAuth')
 }).prefix('v1/user')
 

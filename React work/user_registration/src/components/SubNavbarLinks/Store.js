@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import SubNavbar from "../Sub-Navbar";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import "../../components-css/NavBarCss.css";
 
 export default function Store({ item }) {
+  const navigate = useNavigate();
   const buttonStyle = {
     backgroundColor: "#F28123",
   };
@@ -99,6 +100,40 @@ export default function Store({ item }) {
     }
   };
 
+  const handleAddToCart = async (singleItem) => {
+    const accessToken = localStorage.getItem("access-token");
+    if (!accessToken) {
+      console.log(`user is not authenticate`);
+      navigate("/");
+    }
+    const payload = {
+      productItemId: singleItem.id,
+    };
+
+    const config = {
+      url: "http://127.0.0.1:3333/v1/user/add-to/cart",
+      method: "post",
+      data: payload,
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // Include the access token in the Authorization header
+      },
+    };
+
+    try {
+      const response = await axios(config);
+      const data = response.data;
+
+      if (!data || data.status !== 200) {
+        console.log(`Internal server error`);
+      } else {
+        console.log(`Api is working fine`);
+        navigate(`/user/cart/${singleItem.item}`);
+      }
+    } catch (error) {
+      console.log(`error occur`, error);
+    }
+  };
+
   return (
     <>
       <SubNavbar />
@@ -168,12 +203,12 @@ export default function Store({ item }) {
                   <p className="product-price">
                     <span>Per piece</span> {singleItem.item_price}{" "}
                   </p>
-                  <Link
-                    to={`/user/cart/${singleItem.item}`}
+                  <a
                     className="cart-btn"
+                    onClick={() => handleAddToCart(singleItem)}
                   >
                     <i className="fas fa-shopping-cart"></i> Add to Cart
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}

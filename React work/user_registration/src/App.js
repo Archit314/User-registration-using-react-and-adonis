@@ -45,7 +45,7 @@ function App() {
           />
           <Route
             exact
-            path="/user/cart/:item"
+            path="/user/cart/:item?"
             element={<StoreWithParam component={ProductCart} />}
           />
         </Routes>

@@ -6,7 +6,9 @@ export default function Home() {
   const navbarStyle = {
     backgroundColor: "#F28123", // Set the background color here
   };
-
+  const cartIconAllignment = {
+    color: "white",
+  };
   const textStyle = {
     color: "white",
   };
@@ -68,6 +70,9 @@ export default function Home() {
                 Search
               </button>
             </form> */}
+            <Link to="/user/cart" style={cartIconAllignment}>
+              <i className="fas fa-shopping-cart"></i> Cart
+            </Link>
           </div>
         </div>
       </nav>

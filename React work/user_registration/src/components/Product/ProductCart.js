@@ -1,6 +1,38 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 export default function ProductCart({ item }) {
+  const [cartItem, SetCartItem] = useState([]);
+  useEffect(() => {
+    const getUserCartItem = async () => {
+      const accessToken = await localStorage.getItem("access-token");
+
+      const config = {
+        method: "get",
+        url: `http://127.0.0.1:3333/v1/user/cart/item`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token in the Authorization header
+        },
+      };
+
+      try {
+        const response = await axios(config);
+
+        if (!response.data) {
+          console.log("Internal server error");
+        } else if (response.data.status === 200) {
+          console.log(`Got the items`);
+          SetCartItem(response.data.data.userCartItem);
+        } else {
+          console.log(`Something went wrong`);
+        }
+      } catch (error) {
+        console.log(`Error in API.`);
+      }
+    };
+
+    getUserCartItem();
+  }, []);
   return (
     <>
       {/* <!-- breadcrumb-section --> */}
@@ -36,63 +68,39 @@ export default function ProductCart({ item }) {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="table-body-row">
-                      <td className="product-remove">
-                        <a href="/">
-                          <i className="far fa-window-close"></i>
-                        </a>
-                      </td>
-                      <td className="product-image">
-                        <img
-                          src="assets/img/products/product-img-1.jpg"
-                          alt=""
-                        />
-                      </td>
-                      <td className="product-name">Strawberry</td>
-                      <td className="product-price">$85</td>
-                      <td className="product-quantity">
-                        <input type="number" placeholder="0" />
-                      </td>
-                      <td className="product-total">1</td>
-                    </tr>
-                    <tr className="table-body-row">
-                      <td className="product-remove">
-                        <a href="/">
-                          <i className="far fa-window-close"></i>
-                        </a>
-                      </td>
-                      <td className="product-image">
-                        <img
-                          src="assets/img/products/product-img-2.jpg"
-                          alt=""
-                        />
-                      </td>
-                      <td className="product-name">Berry</td>
-                      <td className="product-price">$70</td>
-                      <td className="product-quantity">
-                        <input type="number" placeholder="0" />
-                      </td>
-                      <td className="product-total">1</td>
-                    </tr>
-                    <tr className="table-body-row">
-                      <td className="product-remove">
-                        <a href="/">
-                          <i className="far fa-window-close"></i>
-                        </a>
-                      </td>
-                      <td className="product-image">
-                        <img
-                          src="assets/img/products/product-img-3.jpg"
-                          alt=""
-                        />
-                      </td>
-                      <td className="product-name">Lemon</td>
-                      <td className="product-price">$35</td>
-                      <td className="product-quantity">
-                        <input type="number" placeholder="0" />
-                      </td>
-                      <td className="product-total">1</td>
-                    </tr>
+                    {cartItem.map((singleItem) => (
+                      <tr className="table-body-row">
+                        {/* icon to remove the item from cart */}
+                        <td className="product-remove">
+                          <a href="/">
+                            <i className="far fa-window-close"></i>
+                          </a>
+                        </td>
+                        {/* Image of the cart item */}
+                        <td className="product-image">
+                          <img
+                            src="assets/img/products/product-img-1.jpg"
+                            alt=""
+                          />
+                        </td>
+                        {/* Name of the cart item */}
+                        <td className="product-name">{singleItem.item.item}</td>
+                        {/* Price of one quantity */}
+                        <td className="product-price">
+                          {singleItem.total_amount}
+                        </td>
+                        {/* Block to increase or decrease the quantity */}
+                        <td className="product-quantity">
+                          <input
+                            type="number"
+                            placeholder={singleItem.quantity}
+                          />
+                        </td>
+                        <td className="product-total">
+                          {singleItem.total_amount * singleItem.quantity}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

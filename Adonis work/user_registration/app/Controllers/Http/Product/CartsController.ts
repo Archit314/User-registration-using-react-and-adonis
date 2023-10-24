@@ -3,6 +3,7 @@ import CategoryProductItem from 'App/Models/Products/CategoryProductItem'
 import UserCart from 'App/Models/Products/UserCart'
 import User from 'App/Models/User'
 import CartService from 'App/Services/Product/CartService'
+const UserCartStatus = require('App/Enum/UserCartStatus')
 
 export default class CartsController {
     public async addToCart(ctx: HttpContextContract){
@@ -43,5 +44,25 @@ export default class CartsController {
             throw error
         }
 
+    }
+
+    public async getUserCart(ctx: HttpContextContract){
+        const {response} = ctx
+
+        const authorizedUser = await User.find(ctx.userAuthInfo.id)
+
+        if(!authorizedUser){
+            return response.status(422).send({status: 422, message: `User is not authorized.`})
+        }
+
+        const userCart = await UserCart.query().where('user_id', authorizedUser.id).where('cart_status', UserCartStatus.Inprogress).preload('userCartItem', (query) => {
+            query.preload('item')
+        }).orderBy('created_at', 'desc').first()
+
+        if(!userCart){
+            return response.status(422).send({status: 422, message: `User cart is empty.`})
+        }
+
+        return response.status(200).send({status: 200, message: `Cart item fetch successfully`, data: userCart})
     }
 }
