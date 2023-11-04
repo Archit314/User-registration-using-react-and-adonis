@@ -2,11 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 export default function ProductCart({ item }) {
+  let [refreshOnUpdate, SetRefreshOnUpdate] = useState(false);
   const [cartItem, SetCartItem] = useState([]);
+  const accessToken = localStorage.getItem("access-token");
+
   useEffect(() => {
     const getUserCartItem = async () => {
-      const accessToken = await localStorage.getItem("access-token");
-
       const config = {
         method: "get",
         url: `http://127.0.0.1:3333/v1/user/cart/item`,
@@ -32,7 +33,67 @@ export default function ProductCart({ item }) {
     };
 
     getUserCartItem();
-  }, []);
+  }, [refreshOnUpdate]);
+
+  const removeCartItem = async (cartItemId) => {
+    let payload = {
+      cartItemId: cartItemId,
+    };
+    const config = {
+      method: "post",
+      url: "http://127.0.0.1:3333/v1/user/cart-item/remove",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: payload,
+    };
+
+    try {
+      let response = await axios(config);
+
+      if (response && response.data.status === 200) {
+        console.log("Item removed successfully.");
+        SetRefreshOnUpdate(!refreshOnUpdate);
+      } else {
+        console.log("Error in reponse.");
+      }
+    } catch (error) {
+      console.log(`Error in API.`);
+    }
+  };
+
+  const handleUpdateCartItem = async (e, cartItemId) => {
+    const { value } = e.target;
+    console.log(`value`, value);
+    console.log(cartItemId);
+
+    let payload = {
+      cartItemId: cartItemId,
+      quantity: value,
+    };
+    console.log(payload);
+    const config = {
+      method: "post",
+      url: "http://127.0.0.1:3333/v1/user/cart-item/update",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: payload,
+    };
+    try {
+      let response = await axios(config);
+      console.log(response);
+
+      if (response && response.data && response.data.status === 200) {
+        console.log(`Cart item updated successfully.`);
+        SetRefreshOnUpdate(!refreshOnUpdate);
+      } else {
+        console.log(`Error in response.`);
+      }
+    } catch (error) {
+      console.log(`Error in API.`);
+    }
+  };
   return (
     <>
       {/* <!-- breadcrumb-section --> */}
@@ -62,7 +123,7 @@ export default function ProductCart({ item }) {
                       <th className="product-remove"></th>
                       <th className="product-image">Product Image</th>
                       <th className="product-name">Name</th>
-                      <th className="product-price">Price</th>
+                      <th className="product-price">Price/piece</th>
                       <th className="product-quantity">Quantity</th>
                       <th className="product-total">Total</th>
                     </tr>
@@ -72,9 +133,16 @@ export default function ProductCart({ item }) {
                       <tr className="table-body-row">
                         {/* icon to remove the item from cart */}
                         <td className="product-remove">
-                          <a href="/">
+                          {/* <a href="/">
                             <i className="far fa-window-close"></i>
-                          </a>
+                          </a> */}
+                          <button
+                            className="btn"
+                            type="button"
+                            onClick={() => removeCartItem(singleItem.id)}
+                          >
+                            <i className="far fa-window-close"></i>{" "}
+                          </button>
                         </td>
                         {/* Image of the cart item */}
                         <td className="product-image">
@@ -87,17 +155,20 @@ export default function ProductCart({ item }) {
                         <td className="product-name">{singleItem.item.item}</td>
                         {/* Price of one quantity */}
                         <td className="product-price">
-                          {singleItem.total_amount}
+                          {singleItem.item.item_price}
                         </td>
                         {/* Block to increase or decrease the quantity */}
                         <td className="product-quantity">
                           <input
                             type="number"
                             placeholder={singleItem.quantity}
+                            onChange={(e) =>
+                              handleUpdateCartItem(e, singleItem.id)
+                            }
                           />
                         </td>
                         <td className="product-total">
-                          {singleItem.total_amount * singleItem.quantity}
+                          {singleItem.total_amount}
                         </td>
                       </tr>
                     ))}
@@ -146,7 +217,8 @@ export default function ProductCart({ item }) {
                 </div>
               </div>
 
-              <div className="coupon-section">
+              {/* Add coupen section */}
+              {/* <div className="coupon-section">
                 <h3>Apply Coupon</h3>
                 <div className="coupon-form-wrap">
                   <form action="index.html">
@@ -158,7 +230,7 @@ export default function ProductCart({ item }) {
                     </p>
                   </form>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -1,9 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CategoryProductItem from 'App/Models/Products/CategoryProductItem'
 import UserCart from 'App/Models/Products/UserCart'
+import UserCartItem from 'App/Models/Products/UserCartItem'
 import User from 'App/Models/User'
 import CartService from 'App/Services/Product/CartService'
 const UserCartStatus = require('App/Enum/UserCartStatus')
+import { schema } from '@ioc:Adonis/Core/Validator'
 
 export default class CartsController {
     public async addToCart(ctx: HttpContextContract){
@@ -64,5 +66,72 @@ export default class CartsController {
         }
 
         return response.status(200).send({status: 200, message: `Cart item fetch successfully`, data: userCart})
+    }
+
+    public async removeCartItem(ctx: HttpContextContract){
+
+        const {request, response} = ctx
+
+        const {cartItemId} = request.all()
+
+        const cartItem = await UserCartItem.query().where('id', cartItemId).first()
+
+        if(!cartItem){
+            return response.status(422).send({status: 422, message: `Cart item not found!`})
+        }
+
+        await cartItem.delete()
+        
+        return response.status(200).send({status: 200, message: `Item removed from cart successfully.`})
+    }
+
+    // Method to update the cart item like its quantity 
+    public async updateCartItemQuantity(ctx: HttpContextContract){
+        const {request, response} = ctx
+
+        await request.validate({
+            schema: schema.create({
+                quantity: schema.string(),
+                cartItemId: schema.string()
+            }),
+            messages: {
+                'quantity.required': `Quantity is required.`,
+                'cartItemId.required': `Cart item id is required.`
+            }
+        })
+
+        const {cartItemId, quantity} = request.all()
+
+        let cartItem = await UserCartItem.query().where('id', cartItemId).preload('item').first()
+        
+
+        if(!cartItem){
+            return response.status(422).send({status: 422, message: `Cart item not found.`})
+        }
+
+        let cartItemCal = await this.cartItemCalculation(cartItem, quantity)
+
+        if(!cartItemCal){
+            return response.status(422).send({status: 422, message: `Failed to update the cart item`})
+        }
+
+        cartItem.quantity = quantity
+        cartItem.totalAmount = cartItemCal.newTotalAmount
+
+        await cartItem.save()
+
+        return response.status(200).send({status: 200, message: `Cart item updated successfully.`, data: cartItem})
+    }
+
+    // Calculation for the quantity and total amount of the cart item
+    async cartItemCalculation(cartItem: UserCartItem, quantity){
+
+        let productPrice = cartItem.item.itemPrice
+        let newTotalAmount = (productPrice * quantity)
+
+        return {
+            newTotalAmount: newTotalAmount,
+            productPrice: productPrice
+        }
     }
 }

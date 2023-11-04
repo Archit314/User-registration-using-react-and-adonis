@@ -35,6 +35,8 @@ Route.group(() => {
   Route.group(() => {
     Route.post('/add-to/cart', 'Product/CartsController.addToCart')
     Route.get('/cart/item', 'Product/CartsController.getUserCart')
+    Route.post('/cart-item/remove', 'Product/CartsController.removeCartItem')
+    Route.post('/cart-item/update', 'Product/CartsController.updateCartItemQuantity')
   }).middleware('userAuth')
 }).prefix('v1/user')
 
